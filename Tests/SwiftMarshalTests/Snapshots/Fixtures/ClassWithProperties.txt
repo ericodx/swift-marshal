@@ -1,0 +1,19 @@
+class ViewModel {
+    func fetchData() {}
+
+    var items: [String] = []
+
+    static let shared = ViewModel()
+
+    private var cache: [String: Any] = [:]
+
+    init() {}
+
+    static func create() -> ViewModel {
+        return ViewModel()
+    }
+
+    deinit {
+        print("Cleaning up")
+    }
+}

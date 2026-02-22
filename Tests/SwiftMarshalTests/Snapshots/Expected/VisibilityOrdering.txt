@@ -1,0 +1,15 @@
+class APIClient {
+    public init() {}
+
+    public var endpoint: String = ""
+
+    private var cache: [String: Any] = [:]
+
+    internal var timeout: Int = 30
+
+    private func helper() {}
+
+    internal func fetch() {}
+
+    public func request() {}
+}

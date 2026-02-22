@@ -1,0 +1,15 @@
+class ViewModel: ObservableObject {
+    public init() {}
+
+    @Published private var isLoading: Bool = false
+
+    public var title: String = ""
+
+    @Published public var items: [String] = []
+
+    @State private var counter: Int = 0
+
+    @MainActor public func refresh() {}
+
+    private func loadData() {}
+}

@@ -1,0 +1,30 @@
+struct DataManager {
+    func save() {}
+
+    struct Config {
+        func validate() {}
+        var maxRetries: Int = 3
+    }
+
+    var config: Config
+
+    init(config: Config) {
+        self.config = config
+    }
+
+    enum Status {
+        case idle
+        case processing
+    }
+}
+
+extension DataManager {
+    func load() {}
+
+    struct CacheEntry {
+        var data: Data
+        var timestamp: Date
+    }
+
+    var cacheSize: Int { 100 }
+}

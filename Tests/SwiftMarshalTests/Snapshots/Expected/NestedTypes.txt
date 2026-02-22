@@ -1,0 +1,17 @@
+struct Container {
+    init() {}
+
+    var data: [Inner] = []
+
+    struct Inner {
+        var innerValue: Int
+        func innerMethod() {}
+    }
+
+    enum State {
+        case loading
+        case loaded
+    }
+
+    func process() {}
+}
