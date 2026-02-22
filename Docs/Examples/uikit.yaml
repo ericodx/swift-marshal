@@ -1,0 +1,89 @@
+# UIKit Configuration
+# ===================
+# Optimized for UIKit/AppKit projects.
+# Groups properties by visibility, emphasizes lifecycle methods.
+
+version: 1
+
+ordering:
+  members:
+    # Type definitions
+    - typealias
+    - associatedtype
+
+    # IBOutlets and IBActions (annotated properties/methods)
+    - property:
+        annotated: true
+
+    # Public API first
+    - property:
+        visibility: public
+    - property:
+        visibility: open
+
+    # Internal implementation
+    - property:
+        visibility: internal
+
+    # Private state
+    - property:
+        visibility: fileprivate
+    - property:
+        visibility: private
+
+    # Initializers (designated, convenience, required)
+    - initializer
+
+    # Nested types
+    - subtype
+
+    # Static/class methods
+    - method:
+        kind: static
+
+    # Annotated methods (@IBAction, @objc)
+    - method:
+        annotated: true
+
+    # Instance methods by visibility
+    - method:
+        kind: instance
+        visibility: open
+    - method:
+        kind: instance
+        visibility: public
+    - method:
+        kind: instance
+        visibility: internal
+    - method:
+        kind: instance
+        visibility: fileprivate
+    - method:
+        kind: instance
+        visibility: private
+
+    # Other
+    - subscript
+    - deinitializer
+
+extensions:
+  strategy: separate
+  respect_boundaries: true
+
+# Example result:
+# ---------------
+# class ProfileViewController: UIViewController {
+#     @IBOutlet weak var nameLabel: UILabel!       // annotated (IBOutlet)
+#     @IBOutlet weak var avatarView: UIImageView!  // annotated (IBOutlet)
+#
+#     public var userId: String?                   // public property
+#     private var isLoading = false                // private property
+#
+#     override init(nibName: ...) { ... }          // initializer
+#     required init?(coder: ...) { ... }           // initializer
+#
+#     @IBAction func saveButtonTapped(_ sender: Any) { ... }  // annotated method
+#
+#     override func viewDidLoad() { ... }          // instance method
+#     private func loadUserData() { ... }          // private method
+# }

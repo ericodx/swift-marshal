@@ -1,0 +1,7 @@
+struct Ordered {
+    init() {}
+
+    var name: String = ""
+
+    func doSomething() {}
+}

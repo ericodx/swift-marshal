@@ -1,0 +1,19 @@
+struct NetworkClient {
+    init(baseURL: String) {
+        self.baseURL = baseURL
+    }
+
+    var baseURL: String
+
+    private var session: URLSession = .shared
+
+    func fetch() {}
+}
+
+extension NetworkClient {
+    func post() {}
+
+    var timeout: TimeInterval { 30 }
+
+    func delete() {}
+}

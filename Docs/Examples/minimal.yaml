@@ -1,0 +1,34 @@
+# Minimal Configuration
+# ====================
+# Simplest configuration with basic member ordering.
+# Good starting point for new projects or learning Swift Marshal.
+
+version: 1
+
+ordering:
+  members:
+    # Type definitions first
+    - typealias
+    - associatedtype
+
+    # Initialization
+    - initializer
+
+    # Properties (static before instance)
+    - type_property
+    - instance_property
+
+    # Nested types
+    - subtype
+
+    # Methods (static before instance)
+    - type_method
+    - instance_method
+
+    # Other
+    - subscript
+    - deinitializer
+
+extensions:
+  strategy: separate
+  respect_boundaries: true

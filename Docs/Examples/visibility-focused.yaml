@@ -1,0 +1,98 @@
+# Visibility-Focused Configuration
+# =================================
+# Orders members primarily by access level.
+# Ideal for libraries and frameworks where public API clarity is important.
+
+version: 1
+
+ordering:
+  members:
+    # Type definitions (always first)
+    - typealias
+    - associatedtype
+
+    # === PUBLIC API ===
+    # Everything public/open grouped together
+
+    - property:
+        visibility: open
+    - property:
+        visibility: public
+
+    - initializer
+
+    - method:
+        kind: static
+        visibility: open
+    - method:
+        kind: static
+        visibility: public
+    - method:
+        kind: instance
+        visibility: open
+    - method:
+        kind: instance
+        visibility: public
+
+    - subscript
+
+    # === INTERNAL IMPLEMENTATION ===
+
+    - property:
+        visibility: internal
+
+    - method:
+        kind: static
+        visibility: internal
+    - method:
+        kind: instance
+        visibility: internal
+
+    # === PRIVATE DETAILS ===
+
+    - property:
+        visibility: fileprivate
+    - property:
+        visibility: private
+
+    - method:
+        kind: static
+        visibility: fileprivate
+    - method:
+        kind: static
+        visibility: private
+    - method:
+        kind: instance
+        visibility: fileprivate
+    - method:
+        kind: instance
+        visibility: private
+
+    # Nested types and cleanup
+    - subtype
+    - deinitializer
+
+extensions:
+  strategy: separate
+  respect_boundaries: true
+
+# Example result:
+# ---------------
+# public class NetworkClient {
+#     // === PUBLIC API ===
+#     public var baseURL: URL                       // public property
+#     public var timeout: TimeInterval              // public property
+#
+#     public init(baseURL: URL) { ... }             // public initializer
+#
+#     public static func shared() -> Self { ... }  // public static method
+#     public func fetch(...) async throws { ... }  // public instance method
+#
+#     // === INTERNAL ===
+#     var session: URLSession                       // internal property
+#     func buildRequest(...) -> URLRequest { ... } // internal method
+#
+#     // === PRIVATE ===
+#     private var cache: [String: Data]             // private property
+#     private func validateResponse(...) { ... }    // private method
+# }

@@ -1,0 +1,13 @@
+struct SwiftUIView {
+    func regularMethod() {}
+
+    @MainActor func annotatedMethod() {}
+
+    var regularProperty: String = ""
+
+    @State var stateProperty: Int = 0
+
+    init() {}
+
+    @Published var publishedProperty: Bool = false
+}

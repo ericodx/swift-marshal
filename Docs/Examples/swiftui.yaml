@@ -1,0 +1,67 @@
+# SwiftUI Configuration
+# =====================
+# Optimized for SwiftUI projects with property wrappers.
+# Places @State, @Binding, @Published, etc. prominently.
+
+version: 1
+
+ordering:
+  members:
+    # Type definitions
+    - typealias
+    - associatedtype
+
+    # SwiftUI property wrappers first (@State, @Binding, @Published, @Observable, etc.)
+    - property:
+        annotated: true
+
+    # Initializers after properties (SwiftUI views often have simple inits)
+    - initializer
+
+    # Regular properties by visibility
+    - property:
+        visibility: public
+    - property:
+        visibility: internal
+    - property:
+        visibility: private
+
+    # Nested types (ViewModifiers, helper types)
+    - subtype
+
+    # Static methods (factory methods, previews helpers)
+    - method:
+        kind: static
+
+    # Instance methods by visibility
+    - method:
+        kind: instance
+        visibility: public
+    - method:
+        kind: instance
+        visibility: internal
+    - method:
+        kind: instance
+        visibility: private
+
+    # Rarely used in SwiftUI
+    - subscript
+    - deinitializer
+
+extensions:
+  strategy: separate
+  respect_boundaries: true
+
+# Example result:
+# ---------------
+# struct ContentView: View {
+#     @State private var isPresented = false    // annotated property
+#     @Binding var selection: Int               // annotated property
+#
+#     init(selection: Binding<Int>) { ... }     // initializer
+#
+#     private let cornerRadius: CGFloat = 8     // private property
+#
+#     var body: some View { ... }               // public instance method
+#     private func handleTap() { ... }          // private instance method
+# }
