@@ -76,7 +76,7 @@ For Xcode integration via the Build Tool Plugin, add the package as a dependency
 ```swift
 // Package.swift
 dependencies: [
-    .package(url: "https://github.com/ericodx/swift-marshal", from: "1.2.0"),
+    .package(url: "https://github.com/ericodx/swift-marshal", from: "1.0.0"),
 ]
 
 targets: [
