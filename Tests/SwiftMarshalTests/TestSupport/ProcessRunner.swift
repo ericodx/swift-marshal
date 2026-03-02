@@ -26,14 +26,16 @@ func run(args: [String]) throws -> ProcessResult {
     try process.run()
     process.waitUntilExit()
 
-    let stdout = String(
-        data: stdoutPipe.fileHandleForReading.readDataToEndOfFile(),
-        encoding: .utf8
-    ) ?? ""
-    let stderr = String(
-        data: stderrPipe.fileHandleForReading.readDataToEndOfFile(),
-        encoding: .utf8
-    ) ?? ""
+    let stdout =
+        String(
+            data: stdoutPipe.fileHandleForReading.readDataToEndOfFile(),
+            encoding: .utf8
+        ) ?? ""
+    let stderr =
+        String(
+            data: stderrPipe.fileHandleForReading.readDataToEndOfFile(),
+            encoding: .utf8
+        ) ?? ""
 
     return ProcessResult(stdout: stdout, stderr: stderr, exitCode: process.terminationStatus)
 }

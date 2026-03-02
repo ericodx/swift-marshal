@@ -1,0 +1,7 @@
+- id: swift-marshal
+  name: Swift Marshal
+  description: Reorder Swift type members without rewriting code.
+  entry: swift-marshal
+  language: swift
+  types: [swift]
+  pass_filenames: false
