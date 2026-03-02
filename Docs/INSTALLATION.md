@@ -95,6 +95,34 @@ See [Xcode Integration](Examples/xcode-integration.md) for detailed setup instru
 
 ---
 
+## pre-commit
+
+Add the hook to your .pre-commit-config.yaml:
+
+```yaml
+- repo: https://github.com/ericodx/swift-marshal
+  rev: v1.1.0
+  hooks:
+    - id: swift-marshal
+      name: ✓ Swift Marshal
+      description: Reorder Swift type members without rewriting code.
+      args: ["check", "--quiet", "--path", "Sources"]
+```
+
+Install the hooks:
+
+```bash
+pre-commit install
+```
+
+Run manually (optional):
+
+```bash
+pre-commit run --all-files
+```
+
+---
+
 ## Requirements
 
 ### CLI (Homebrew / Manual)
