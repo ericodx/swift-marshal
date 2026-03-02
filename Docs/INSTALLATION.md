@@ -103,10 +103,13 @@ Add the hook to your .pre-commit-config.yaml:
 - repo: https://github.com/ericodx/swift-marshal
   rev: v1.1.0
   hooks:
-    - id: swift-marshal
-      name: ✓ Swift Marshal
-      description: Reorder Swift type members without rewriting code.
-      args: ["check", "--quiet", "--path", "Sources"]
+  - id: swift-marshal
+    name: ✓ Swift Marshal
+    description: Reorder Swift type members without rewriting code.
+    entry: swift-marshal check --quiet --path Sources
+    language: system
+    types: [swift]
+    pass_filenames: false
 ```
 
 Install the hooks:
