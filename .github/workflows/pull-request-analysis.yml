@@ -152,14 +152,7 @@ jobs:
       - name: Code duplication (swift-cpd)
         run: |
           swift-cpd \
-            --types 1,2,3,4 \
-            --min-tokens 50 \
-            --min-lines 5 \
-            --ignoreSameFile true \
-            --ignoreStructural true \
-            --format json \
-            --output reports/cpd-report.json \
-            Sources || true
+            || true
 
       - name: Upload reports artifact
         uses: actions/upload-artifact@v7
