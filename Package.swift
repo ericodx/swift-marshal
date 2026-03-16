@@ -13,6 +13,7 @@ let package = Package(
     products: [
         .executable(name: "swift-marshal", targets: ["swift-marshal"]),
         .plugin(name: "SwiftMarshalPlugin", targets: ["SwiftMarshalPlugin"]),
+        .plugin(name: "SwiftMarshalCommandPlugin", targets: ["SwiftMarshalCommandPlugin"]),
     ],
     dependencies: [
         .package(url: "https://github.com/swiftlang/swift-syntax.git", from: "602.0.0")
@@ -43,6 +44,21 @@ let package = Package(
         .plugin(
             name: "SwiftMarshalPlugin",
             capability: .buildTool(),
+            dependencies: ["swift-marshal"]
+        ),
+        .plugin(
+            name: "SwiftMarshalCommandPlugin",
+            capability: .command(
+                intent: .custom(
+                    verb: "marshal",
+                    description: "Reorder Swift type members according to .swift-marshal.yaml"
+                ),
+                permissions: [
+                    .writeToPackageDirectory(
+                        reason: "Reorders member declarations in Swift source files"
+                    )
+                ]
+            ),
             dependencies: ["swift-marshal"]
         ),
     ]
