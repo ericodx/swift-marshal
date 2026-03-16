@@ -1,0 +1,11 @@
+struct User {
+    init(name: String) {
+        self.name = name
+    }
+
+    var name: String
+
+    func greet() {
+        print("Hello")
+    }
+}
