@@ -34,12 +34,12 @@ func discoverMembers(in source: String) -> [MemberDeclaration] {
 
     let visitor = UnifiedMemberDiscoveryVisitor(
         sourceLocationConverter: converter,
-        builder: MemberDeclarationBuilder()
+        builder: SyntaxMemberDeclarationBuilder()
     )
     for item in structDecl.memberBlock.members {
         visitor.process(item)
     }
-    return visitor.members
+    return visitor.members.map(\.declaration)
 }
 
 func discoverMembersInProtocol(in source: String) -> [MemberDeclaration] {
@@ -53,12 +53,12 @@ func discoverMembersInProtocol(in source: String) -> [MemberDeclaration] {
 
     let visitor = UnifiedMemberDiscoveryVisitor(
         sourceLocationConverter: converter,
-        builder: MemberDeclarationBuilder()
+        builder: SyntaxMemberDeclarationBuilder()
     )
     for item in protocolDecl.memberBlock.members {
         visitor.process(item)
     }
-    return visitor.members
+    return visitor.members.map(\.declaration)
 }
 
 // MARK: - Syntax Classification Helpers
