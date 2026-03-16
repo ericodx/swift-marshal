@@ -35,12 +35,14 @@ struct PipelineCoordinatorTests {
         let result = CheckResult(
             path: "/test/path.swift",
             results: [],
-            needsReorder: true
+            needsReorder: true,
+            reportText: "report"
         )
         let sendable: any Sendable = result
 
         #expect((sendable as? CheckResult)?.path == result.path)
         #expect((sendable as? CheckResult)?.needsReorder == result.needsReorder)
+        #expect((sendable as? CheckResult)?.reportText == result.reportText)
     }
 
     // MARK: - FixResult Sendable

@@ -20,8 +20,8 @@ actor PipelineCoordinator {
 
     func checkFiles(_ paths: [String]) async throws -> [CheckResult] {
         let pipeline = ParseStage()
-            .then(ClassifyStage())
-            .then(ReorderStage(configuration: configuration))
+            .then(SyntaxClassifyStage())
+            .then(RewritePlanStage(engine: ReorderEngine(configuration: configuration)))
 
         return try await withThrowingTaskGroup(of: CheckResult.self) { group in
             for path in paths {
@@ -64,13 +64,16 @@ actor PipelineCoordinator {
     // MARK: - Private Helpers
 
     private func checkSingleFile(
-        path: String, pipeline: any Stage<ParseInput, ReorderOutput>
+        path: String, pipeline: any Stage<ParseInput, RewritePlanOutput>
     ) async throws -> CheckResult {
         let source = try await fileIO.read(at: path)
         let input = ParseInput(path: path, source: source)
         let output = try pipeline.process(input)
-        let needsReorder = needsReordering(output.results)
-        return CheckResult(path: path, results: output.results, needsReorder: needsReorder)
+        let results = output.plans.map(TypeReorderResult.init(from:))
+        let reorderOutput = ReorderOutput(path: path, results: results)
+        let needsReorder = needsReordering(results)
+        let reportText = try ReorderReportStage().process(reorderOutput).text
+        return CheckResult(path: path, results: results, needsReorder: needsReorder, reportText: reportText)
     }
 
     private func needsReordering(_ results: [TypeReorderResult]) -> Bool {

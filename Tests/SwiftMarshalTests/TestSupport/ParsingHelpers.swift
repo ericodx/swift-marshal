@@ -21,14 +21,6 @@ func discoverTypes(in source: String) -> [TypeDeclaration] {
     return visitor.declarations
 }
 
-// MARK: - Classification Helpers
-
-func classify(_ source: String) throws -> ClassifyOutput {
-    let parseOutput = makeParseOutput(source: source)
-    let stage = ClassifyStage()
-    return try stage.process(parseOutput)
-}
-
 // MARK: - Member Discovery Helpers
 
 func discoverMembers(in source: String) -> [MemberDeclaration] {

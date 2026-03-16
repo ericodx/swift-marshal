@@ -47,7 +47,6 @@ struct CheckCommand {
         var totalTypes = 0
         var typesNeedingReorder = 0
         var filesNeedingReorder: [String] = []
-        let reportStage = ReorderReportStage()
 
         for result in results {
             totalTypes += result.results.count
@@ -60,9 +59,7 @@ struct CheckCommand {
             if xcode {
                 printXcodeWarnings(path: result.path, results: result.results)
             } else if !options.quiet {
-                let reorderOutput = ReorderOutput(path: result.path, results: result.results)
-                let reportOutput = try reportStage.process(reorderOutput)
-                print(reportOutput.text)
+                print(result.reportText)
                 print()
             }
         }
