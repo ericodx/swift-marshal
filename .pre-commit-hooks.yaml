@@ -1,0 +1,7 @@
+- id: swift-marshal
+  name: Swift Marshal
+  description: Check member ordering in Swift source files and fail if reordering is needed.
+  entry: swift-marshal check
+  language: swift
+  types: [swift]
+  pass_filenames: false

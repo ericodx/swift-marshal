@@ -1,0 +1,25 @@
+struct First {
+    func doSomething() {}
+    init() {}
+}
+
+class Second {
+    var value: Int = 0
+    func process() {}
+    init(value: Int) {
+        self.value = value
+    }
+}
+
+enum Third {
+    case a
+    case b
+
+    func describe() -> String {
+        return "enum"
+    }
+
+    var description: String {
+        return "Third"
+    }
+}

@@ -1,0 +1,97 @@
+# Contributing to Swift Marshal
+
+Thank you for your interest in contributing to **Swift Marshal**.
+
+Swift Marshal is an AST-based CLI that organizes the internal structure of Swift types.
+It reorders members within type declarations, but does **not** format code, alter logic, or infer developer intent.
+
+For an overview of the project goals and scope, see the [README](README.md).
+
+---
+
+## Code of Conduct
+
+Be respectful, professional, and constructive in all interactions.
+This project follows the [Contributor Covenant Code of Conduct](CODE_OF_CONDUCT.md).
+
+---
+
+## Technical Principles
+
+Swift Marshal follows a strict set of technical principles:
+
+- Reordering must be **deterministic and reproducible** — same config and same input always produce the same output
+- `check` is **read-only** — it never modifies source files
+- `fix` must produce output that **passes `check`** under the same configuration
+- No members are **lost or duplicated** after reordering
+- Member **positions (file, line) are accurate** in all reported violations
+- Trivia and formatting are **preserved** for members that do not move
+- **Zero external dependencies** beyond SwiftSyntax
+- Full compatibility with **Swift 6 Strict Concurrency**
+- Pipeline stages are **stateless pure transformations** — no shared mutable state between them
+
+Changes that violate these principles will not be accepted, even if they pass tests.
+
+---
+
+## AI-Assisted Contributions
+
+AI-assisted contributions are welcome.
+
+When using tools such as GitHub Copilot or other LLMs:
+
+- Treat AI as an **assistant**, not an authority
+- Ensure all generated code follows the same standards as human-written code
+- Do not introduce speculative or inferred behavior
+
+Follow the same code review standards regardless of how the code was written.
+
+---
+
+## Pull Requests
+
+All Pull Requests must:
+
+- Follow the repository PR template
+- Be focused on a single concern
+- Reference an existing issue when applicable
+- Respect the technical principles described above
+
+AI-generated changes are reviewed under the same criteria as human-written code.
+
+---
+
+## Workflow
+
+1. Open an issue describing the problem or proposal
+2. Wait for maintainer feedback
+3. Implement the change in a focused branch
+4. Open a Pull Request referencing the issue
+
+Unapproved structural changes may be closed without review.
+
+---
+
+## Testing
+
+- Unit tests are mandatory for all new functionality
+- Use `ModelFactories`, `SyntaxFactories`, and `ParsingHelpers` for building fixtures
+- Use `FileHelpers` for any test that touches the filesystem
+- Use `ProcessRunner` for end-to-end CLI tests
+- Use `SnapshotHelpers` when testing output format
+- Tests must prove **determinism** — same input always produces the same output
+- Cover both the `check` and `fix` paths where the change affects either
+- Target code coverage: **90%+**
+
+---
+
+## Communication
+
+All communication happens publicly via GitHub Issues and Discussions.
+Private contact is discouraged.
+
+---
+
+## License
+
+By contributing, you agree that your contributions are licensed under the [MIT](./LICENSE).
