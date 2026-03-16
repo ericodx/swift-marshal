@@ -92,7 +92,6 @@ jobs:
         with:
           name: build-artifacts
           path: |
-            .build/debug/swift-cpd
             .build/debug/index/store
           retention-days: 1
 
@@ -115,13 +114,15 @@ jobs:
         uses: actions/cache@v5
         with:
           path: ~/Library/Caches/Homebrew
-          key: ${{ runner.os }}-${{ runner.arch }}-brew-swiftlint-gitleaks-periphery
+          key: ${{ runner.os }}-${{ runner.arch }}-brew-swiftlint-gitleaks-periphery-swift-cpd
           restore-keys: |
             ${{ runner.os }}-${{ runner.arch }}-brew-
 
       - name: Install analysis tools
         run: |
           brew install swiftlint gitleaks periphery
+          brew tap ericodx/homebrew-tools
+          brew install swift-cpd
 
       - name: Download build artifacts
         uses: actions/download-artifact@v8
@@ -150,9 +151,7 @@ jobs:
 
       - name: Code duplication (swift-cpd)
         run: |
-          chmod +x .build/debug/swift-cpd
-
-          .build/debug/swift-cpd \
+          swift-cpd \
             --types 1,2,3,4 \
             --min-tokens 50 \
             --min-lines 5 \
