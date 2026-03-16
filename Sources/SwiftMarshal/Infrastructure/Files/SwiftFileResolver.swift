@@ -2,10 +2,6 @@ import Foundation
 
 enum SwiftFileResolver {
 
-    static func resolve(files: [String], path: String?) -> [String] {
-        resolve(files: files, paths: path.map { [$0] } ?? [])
-    }
-
     static func resolve(files: [String], paths: [String]) -> [String] {
         var seen = Set(files)
         var result = files

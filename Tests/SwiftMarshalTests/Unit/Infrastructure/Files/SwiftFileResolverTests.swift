@@ -6,20 +6,20 @@ import Testing
 @Suite("SwiftFileResolver Tests")
 struct SwiftFileResolverTests {
 
-    // MARK: - resolve(files:path:)
+    // MARK: - resolve(files:paths:)
 
-    @Test("Given files without path, when resolving, then returns files unchanged")
+    @Test("Given files without paths, when resolving, then returns files unchanged")
     func resolveWithFilesOnly() {
         let files = ["/path/to/File1.swift", "/path/to/File2.swift"]
 
-        let result = SwiftFileResolver.resolve(files: files, path: nil)
+        let result = SwiftFileResolver.resolve(files: files, paths: [])
 
         #expect(result == files)
     }
 
-    @Test("Given empty files without path, when resolving, then returns empty array")
+    @Test("Given empty files without paths, when resolving, then returns empty array")
     func resolveWithEmptyFilesAndNoPath() {
-        let result = SwiftFileResolver.resolve(files: [], path: nil)
+        let result = SwiftFileResolver.resolve(files: [], paths: [])
 
         #expect(result.isEmpty)
     }
@@ -35,7 +35,7 @@ struct SwiftFileResolverTests {
         try "".write(to: file1, atomically: true, encoding: .utf8)
         try "".write(to: file2, atomically: true, encoding: .utf8)
 
-        let result = SwiftFileResolver.resolve(files: [], path: realPath(tempDir))
+        let result = SwiftFileResolver.resolve(files: [], paths: [realPath(tempDir)])
 
         #expect(result.count == 2)
         #expect(result.contains { $0.hasSuffix("File1.swift") })
@@ -51,7 +51,7 @@ struct SwiftFileResolverTests {
         try "".write(to: pathFile, atomically: true, encoding: .utf8)
 
         let existingFiles = ["/existing/File.swift"]
-        let result = SwiftFileResolver.resolve(files: existingFiles, path: realPath(tempDir))
+        let result = SwiftFileResolver.resolve(files: existingFiles, paths: [realPath(tempDir)])
 
         #expect(result.count == 2)
         #expect(result.contains("/existing/File.swift"))
@@ -72,7 +72,7 @@ struct SwiftFileResolverTests {
         try "".write(to: rootFile, atomically: true, encoding: .utf8)
         try "".write(to: nestedFile, atomically: true, encoding: .utf8)
 
-        let result = SwiftFileResolver.resolve(files: [], path: realPath(tempDir))
+        let result = SwiftFileResolver.resolve(files: [], paths: [realPath(tempDir)])
 
         #expect(result.count == 2)
         #expect(result.contains { $0.hasSuffix("Root.swift") })
@@ -92,7 +92,7 @@ struct SwiftFileResolverTests {
         try "".write(to: txtFile, atomically: true, encoding: .utf8)
         try "".write(to: mdFile, atomically: true, encoding: .utf8)
 
-        let result = SwiftFileResolver.resolve(files: [], path: realPath(tempDir))
+        let result = SwiftFileResolver.resolve(files: [], paths: [realPath(tempDir)])
 
         #expect(result.count == 1)
         #expect(result.contains { $0.hasSuffix("File.swift") })
@@ -103,14 +103,14 @@ struct SwiftFileResolverTests {
         let (tempDir, cleanup) = try createTempDirectoryWithCleanup()
         defer { cleanup() }
 
-        let result = SwiftFileResolver.resolve(files: [], path: realPath(tempDir))
+        let result = SwiftFileResolver.resolve(files: [], paths: [realPath(tempDir)])
 
         #expect(result.isEmpty)
     }
 
     @Test("Given path to nonexistent directory, when resolving, then returns empty array")
     func resolveWithNonexistentPath() {
-        let result = SwiftFileResolver.resolve(files: [], path: "/nonexistent/path")
+        let result = SwiftFileResolver.resolve(files: [], paths: ["/nonexistent/path"])
 
         #expect(result.isEmpty)
     }
@@ -128,7 +128,7 @@ struct SwiftFileResolverTests {
         try "".write(to: fileA, atomically: true, encoding: .utf8)
         try "".write(to: fileB, atomically: true, encoding: .utf8)
 
-        let result = SwiftFileResolver.resolve(files: [], path: realPath(tempDir))
+        let result = SwiftFileResolver.resolve(files: [], paths: [realPath(tempDir)])
 
         #expect(result.count == 3)
 

@@ -3,7 +3,10 @@ struct TypeReorderResult: Sendable {
     // MARK: - Initialization
 
     init(
-        name: String, kind: TypeKind, line: Int, originalMembers: [MemberDeclaration],
+        name: String,
+        kind: TypeKind,
+        line: Int,
+        originalMembers: [MemberDeclaration],
         reorderedMembers: [MemberDeclaration]
     ) {
         self.name = name

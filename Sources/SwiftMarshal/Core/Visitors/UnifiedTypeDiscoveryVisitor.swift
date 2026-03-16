@@ -96,17 +96,6 @@ final class UnifiedTypeDiscoveryVisitor<Builder: TypeOutputBuilder>: UnifiedVisi
 
 // MARK: - Convenience Factory Methods
 
-extension UnifiedTypeDiscoveryVisitor where Builder == TypeDeclarationBuilder {
-    static func forDeclarations(
-        converter: SourceLocationConverter
-    ) -> UnifiedTypeDiscoveryVisitor<TypeDeclarationBuilder> {
-        UnifiedTypeDiscoveryVisitor(
-            sourceLocationConverter: converter,
-            builder: TypeDeclarationBuilder()
-        )
-    }
-}
-
 extension UnifiedTypeDiscoveryVisitor where Builder == SyntaxTypeDeclarationBuilder {
     static func forSyntaxDeclarations(
         converter: SourceLocationConverter

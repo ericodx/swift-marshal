@@ -492,57 +492,6 @@ struct PipelineCoordinatorTests {
         #expect(results.allSatisfy { $0.needsReorder == true })
     }
 
-    // MARK: - Factory Method Tests
-
-    @Test("Given no config path, when creating coordinator via factory, then returns a working coordinator")
-    func createWithNilConfigPathReturnsWorkingCoordinator() async throws {
-        let coordinator = try await PipelineCoordinator.create(configPath: nil)
-        let source = """
-            struct Test {
-                init() {}
-            }
-            """
-        let tempFile = createTempFile(content: source)
-        defer { removeTempFile(tempFile) }
-
-        let results = try await coordinator.checkFiles([tempFile])
-
-        #expect(results.count == 1)
-    }
-
-    @Test("Given a valid config file path, when creating coordinator via factory, then loads configuration from file")
-    func createWithValidConfigPathLoadsConfiguration() async throws {
-        let yaml = """
-            version: 1
-            ordering:
-              members:
-                - initializer
-                - instance_method
-            """
-        let configFile = createTempFile(content: yaml)
-        defer { removeTempFile(configFile) }
-
-        let coordinator = try await PipelineCoordinator.create(configPath: configFile)
-        let source = """
-            struct Test {
-                init() {}
-            }
-            """
-        let tempFile = createTempFile(content: source)
-        defer { removeTempFile(tempFile) }
-
-        let results = try await coordinator.checkFiles([tempFile])
-
-        #expect(results.count == 1)
-    }
-
-    @Test("Given a non-existent config file path, when creating coordinator via factory, then throws an error")
-    func createWithInvalidConfigPathThrows() async {
-        await #expect(throws: (any Error).self) {
-            _ = try await PipelineCoordinator.create(configPath: "/tmp/nonexistent-\(UUID().uuidString).yaml")
-        }
-    }
-
     @Test("Given many files, when fixing, then processes all files concurrently")
     func fixFilesProcessesConcurrently() async throws {
         var tempFiles: [String] = []

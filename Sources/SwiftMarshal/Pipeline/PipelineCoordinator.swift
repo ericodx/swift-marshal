@@ -8,14 +8,6 @@ actor PipelineCoordinator {
     private let fileIO: FileIOActor
     private let configuration: Configuration
 
-    nonisolated static func create(configPath: String?) async throws -> PipelineCoordinator {
-        let fileIO = FileIOActor()
-        let fileReader = FileReader()
-        let configService = ConfigurationService(fileReader: fileReader)
-        let configuration = try await configService.load(configPath: configPath)
-        return PipelineCoordinator(fileIO: fileIO, configuration: configuration)
-    }
-
     // MARK: - Check Operation
 
     func checkFiles(_ paths: [String]) async throws -> [CheckResult] {

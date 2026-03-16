@@ -13,10 +13,10 @@ func makeParseOutput(source: String, path: String = "Test.swift") -> ParseOutput
 
 // MARK: - Type Discovery Helpers
 
-func discoverTypes(in source: String) -> [TypeDeclaration] {
+func discoverTypes(in source: String) -> [SyntaxTypeDeclaration] {
     let syntax = Parser.parse(source: source)
     let converter = SourceLocationConverter(fileName: "Test.swift", tree: syntax)
-    let visitor = UnifiedTypeDiscoveryVisitor.forDeclarations(converter: converter)
+    let visitor = UnifiedTypeDiscoveryVisitor.forSyntaxDeclarations(converter: converter)
     visitor.walk(syntax)
     return visitor.declarations
 }
