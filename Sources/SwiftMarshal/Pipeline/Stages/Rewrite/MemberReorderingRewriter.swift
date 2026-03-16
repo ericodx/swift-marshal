@@ -75,11 +75,9 @@ final class MemberReorderingRewriter: SyntaxRewriter {
         for plan in candidates where membersMatchByID(memberBlock: memberBlock, plan: plan) {
             return plan
         }
-
         for plan in candidates where membersMatchByCount(memberBlock: memberBlock, plan: plan) {
             return plan
         }
-
         return nil
     }
 
@@ -125,10 +123,19 @@ final class MemberReorderingRewriter: SyntaxRewriter {
             var item = allItems[trackedIndices[originalIndex]]
 
             if newIndex == 0 {
-                item = item.with(\.leadingTrivia, originalFirstTrackedTrivia)
+                let trivia =
+                    originalIndex != 0
+                    ? ensureBlankLine(in: originalFirstTrackedTrivia)
+                    : originalFirstTrackedTrivia
+                item = item.with(\.leadingTrivia, trivia)
             } else if originalIndex == 0 {
-                let normalizedTrivia = inferLeadingTriviaFromItems(allItems, trackedIndices: trackedIndices)
-                item = item.with(\.leadingTrivia, normalizedTrivia)
+                let trivia = inferLeadingTriviaFromItems(allItems, trackedIndices: trackedIndices)
+                item = item.with(\.leadingTrivia, ensureBlankLine(in: trivia))
+            } else {
+                let previousOriginalIndex = plan.reorderedMembers[newIndex - 1].originalIndex
+                if originalIndex != previousOriginalIndex + 1 {
+                    item = item.with(\.leadingTrivia, ensureBlankLine(in: item.leadingTrivia))
+                }
             }
 
             reorderedTrackedItems.append(item)
@@ -151,10 +158,15 @@ final class MemberReorderingRewriter: SyntaxRewriter {
     }
 
     private func inferLeadingTriviaFromItems(_ items: [MemberBlockItemSyntax], trackedIndices: [Int]) -> Trivia {
-        guard trackedIndices.count > 1 else {
-            return trackedIndices.isEmpty ? Trivia() : items[trackedIndices[0]].leadingTrivia
-        }
-
         return items[trackedIndices[1]].leadingTrivia
+    }
+
+    private func ensureBlankLine(in trivia: Trivia) -> Trivia {
+        var pieces = Array(trivia)
+        guard let first = pieces.first, case .newlines(let count) = first, count < 2 else {
+            return trivia
+        }
+        pieces[0] = .newlines(2)
+        return Trivia(pieces: pieces)
     }
 }

@@ -431,6 +431,120 @@ struct ConfigurationLoaderTests {
         #expect(raw.memberRules[0] == .property(annotated: nil, visibility: nil))
     }
 
+    // MARK: - Paths Configuration
+
+    @Test("Given a configuration with a paths section, when parsing the YAML, then parses the path list")
+    func parsesPathsList() throws {
+        let yaml = """
+            paths:
+              - Sources/
+              - Tests/
+            """
+        let raw = try loader.parse(yaml)
+
+        #expect(raw.paths.count == 2)
+        #expect(raw.paths[0] == "Sources/")
+        #expect(raw.paths[1] == "Tests/")
+    }
+
+    @Test(
+        "Given a paths section followed by a top-level key, when parsing the YAML, then stops parsing paths at the top-level key"
+    )
+    func parsesPathsFollowedByTopLevelKey() throws {
+        let yaml = """
+            paths:
+              - Sources/
+            version: 2
+            """
+        let raw = try loader.parse(yaml)
+
+        #expect(raw.paths.count == 1)
+        #expect(raw.paths[0] == "Sources/")
+        #expect(raw.version == 2)
+    }
+
+    @Test(
+        "Given an empty paths section immediately followed by a top-level key, when parsing the YAML, then returns no paths"
+    )
+    func parsesEmptyPathsSectionFollowedByTopLevelKey() throws {
+        let yaml = """
+            paths:
+            version: 2
+            """
+        let raw = try loader.parse(yaml)
+
+        #expect(raw.paths.isEmpty)
+        #expect(raw.version == 2)
+    }
+
+    @Test(
+        "Given a paths section containing a non-list item, when parsing the YAML, then skips the non-list item"
+    )
+    func parsesPathsWithNonListItem() throws {
+        let yaml = """
+            paths:
+              not_a_list
+              - Sources/
+            """
+        let raw = try loader.parse(yaml)
+
+        #expect(raw.paths.count == 1)
+        #expect(raw.paths[0] == "Sources/")
+    }
+
+    // MARK: - Comment Stripping
+
+    @Test(
+        "Given a line with a tab-prefixed inline comment, when parsing the YAML, then strips the tab comment"
+    )
+    func stripsTabPrefixedInlineComment() throws {
+        let yaml = "version: 1\t# tab comment"
+        let raw = try loader.parse(yaml)
+
+        #expect(raw.version == 1)
+    }
+
+    @Test(
+        "Given a line that is entirely a comment, when parsing the YAML, then ignores the full-line comment"
+    )
+    func ignoresFullLineComment() throws {
+        let yaml = """
+            # this is a comment
+            version: 2
+            """
+        let raw = try loader.parse(yaml)
+
+        #expect(raw.version == 2)
+    }
+
+    @Test(
+        "Given a line with a space-prefixed inline comment, when parsing the YAML, then strips the inline comment"
+    )
+    func stripsSpacePrefixedInlineComment() throws {
+        let yaml = "version: 1 # inline comment"
+        let raw = try loader.parse(yaml)
+
+        #expect(raw.version == 1)
+    }
+
+    @Test(
+        "Given a complex rule attribute block with a blank line, when parsing the YAML, then skips the blank line and parses remaining attributes"
+    )
+    func skipsBlankLineInComplexRuleAttributes() throws {
+        let yaml = """
+            ordering:
+              members:
+                - method:
+                    kind: static
+
+                    visibility: public
+            """
+        let raw = try loader.parse(yaml)
+
+        #expect(raw.memberRules.count == 1)
+        #expect(raw.memberRules[0] == .method(kind: "static", visibility: "public", annotated: nil))
+    }
+
     // MARK: - Mixed Configuration
 
     @Test(

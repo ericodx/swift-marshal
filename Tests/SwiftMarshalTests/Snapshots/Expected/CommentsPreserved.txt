@@ -1,4 +1,5 @@
 struct Documented {
+
     // MARK: - Methods
 
     /// Performs the main action.

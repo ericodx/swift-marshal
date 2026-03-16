@@ -1,12 +1,5 @@
 import Foundation
 
-struct CommonCommandOptions {
-    var files: [String] = []
-    var path: String?
-    var config: String?
-    var quiet: Bool = false
-}
-
 func nextValue(in args: [String], after index: inout Int, flag: String) throws -> String {
     index += 1
 
@@ -27,12 +20,6 @@ func resolvedPaths(options: CommonCommandOptions, configuration: Configuration) 
     }
 
     return configuration.paths
-}
-
-struct ResolvedCommand: Sendable {
-    let coordinator: PipelineCoordinator
-    let files: [String]
-    let configuration: Configuration
 }
 
 func resolveCommand(options: CommonCommandOptions) async throws -> ResolvedCommand {
