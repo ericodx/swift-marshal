@@ -6,9 +6,26 @@
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=deploy-on-friday-swift-marshal&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=deploy-on-friday-swift-marshal)
 [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=deploy-on-friday-swift-marshal&metric=coverage)](https://sonarcloud.io/summary/new_code?id=deploy-on-friday-swift-marshal)
 
-**Reorder Swift type members without altering logic or formatting.**
+**Ensure consistent member ordering in Swift types to improve readability and maintainability.**
 
-`swift-marshal` is an AST-based CLI that enforces a consistent member ordering within Swift type declarations. It reports violations with `check` and applies fixes with `fix` — both driven by SwiftSyntax and a declarative configuration file.
+`swift-marshal` is an AST-based CLI that ensures consistent member ordering within Swift type declarations. It reports violations with `check` and applies fixes with `fix`, driven by SwiftSyntax and a declarative configuration file.
+
+## Why
+
+Inconsistent member ordering increases:
+- cognitive load when navigating code
+- friction during code reviews
+- inconsistency across teams and codebases
+
+`swift-marshal` helps maintain a predictable structure, making code easier to read, review, and maintain.
+
+## Features
+
+- Ensures consistent member ordering using AST-based analysis
+- Preserves original logic and formatting
+- Supports automated fixes via CLI
+- Can be integrated into CI pipelines
+- Configurable through a declarative YAML file
 
 ## Install
 
