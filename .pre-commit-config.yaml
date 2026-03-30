@@ -111,7 +111,7 @@ repos:
 
   # Swift Clone & Pattern Detector
   - repo: https://github.com/ericodx/swift-cpd
-    rev: v1.0.0
+    rev: v1.1.2
     hooks:
       - id: swift-cpd
         name: ✓ Swift Clone & Pattern Detector
