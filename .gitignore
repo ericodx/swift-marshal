@@ -1,4 +1,5 @@
 # Local Files
+.swift-mutation-testing-cache/
 .swift-marshal-cache/
 .swift-cpd-cache/
 USP/

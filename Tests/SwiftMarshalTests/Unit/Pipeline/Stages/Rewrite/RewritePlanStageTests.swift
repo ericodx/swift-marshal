@@ -125,6 +125,29 @@ struct RewritePlanStageTests {
     }
 
     @Test(
+        "Given a type with duplicate member names, when creating rewrite plan, then maps each duplicate to a distinct original index"
+    )
+    func handlesDuplicateMemberNames() throws {
+        let source = """
+            struct Foo {
+                func setup() {}
+                func setup() {}
+                init() {}
+            }
+            """
+
+        let output = try makeRewritePlan(from: source)
+
+        #expect(output.plans.count == 1)
+
+        let plan = output.plans[0]
+        let indices = plan.reorderedMembers.map(\.originalIndex)
+        let uniqueIndices = Set(indices)
+
+        #expect(uniqueIndices.count == indices.count)
+    }
+
+    @Test(
         "Given a scenario where reordered declarations don't match original members, when creating rewrite plan, then handles missing member mapping gracefully"
     )
     func handlesMissingMemberMapping() throws {

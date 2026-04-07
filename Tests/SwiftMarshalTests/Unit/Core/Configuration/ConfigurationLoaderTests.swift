@@ -492,6 +492,37 @@ struct ConfigurationLoaderTests {
         #expect(raw.paths[0] == "Sources/")
     }
 
+    @Test(
+        "Given a paths section with multiple list items, when parsing the YAML, then correctly sets list indent on first item"
+    )
+    func setsListIndentOnFirstPathItem() throws {
+        let yaml = """
+            paths:
+              - Sources/
+              - Tests/
+              - Resources/
+            """
+        let raw = try loader.parse(yaml)
+
+        #expect(raw.paths.count == 3)
+        #expect(raw.paths[0] == "Sources/")
+        #expect(raw.paths[1] == "Tests/")
+        #expect(raw.paths[2] == "Resources/")
+    }
+
+    @Test(
+        "Given a paths section with items followed by a less-indented list item, when parsing, then stops at the less-indented item"
+    )
+    func pathsStopsAtLessIndentedListItem() throws {
+        let yaml = "paths:\n    - Sources/\n    - Tests/\n  - WrongIndent\nversion: 2"
+        let raw = try loader.parse(yaml)
+
+        #expect(raw.paths.count == 2)
+        #expect(raw.paths[0] == "Sources/")
+        #expect(raw.paths[1] == "Tests/")
+        #expect(raw.version == 2)
+    }
+
     // MARK: - Comment Stripping
 
     @Test(
