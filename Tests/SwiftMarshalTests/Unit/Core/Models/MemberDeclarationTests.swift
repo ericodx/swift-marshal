@@ -25,6 +25,12 @@ struct MemberDeclarationTests {
         #expect(member.line == 42)
     }
 
+    @Test("Given a member declaration without isAnnotated, when creating the instance, then defaults to false")
+    func defaultIsAnnotatedIsFalse() {
+        let member = MemberDeclaration(name: "test", kind: .instanceProperty, line: 1)
+        #expect(member.isAnnotated == false)
+    }
+
     @Test("Given MemberDeclaration, when stored as Sendable, then can be recovered with same name")
     func isSendable() {
         let original = MemberDeclaration(name: "test", kind: .typeProperty, line: 1)
