@@ -539,6 +539,14 @@ struct CheckCommandTests {
         }
     }
 
+    // MARK: - Default Values
+
+    @Test("Given no flags, when parsing check command, then quiet defaults to false")
+    func quietDefaultsToFalse() throws {
+        let command = try CheckCommand.parse(["file.swift"])
+        #expect(command.options.quiet == false)
+    }
+
     // MARK: - Argument Parsing
 
     @Test("Given config flag, when parsing arguments, then sets config path")
@@ -573,6 +581,8 @@ struct CheckCommandTests {
             try CheckCommand.parse(["--output"])
         }
     }
+
+    // MARK: - Marker File
 
     @Test("Given no output flag, when executing check, then does not create marker file")
     func noOutputFlagDoesNotCreateMarkerFile() async throws {
