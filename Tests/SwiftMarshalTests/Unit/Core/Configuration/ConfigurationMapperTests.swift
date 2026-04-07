@@ -330,6 +330,13 @@ struct ConfigurationMapperTests {
         #expect(config.respectBoundaries == true)
     }
 
+    // MARK: - Default Configuration
+
+    @Test("Given default configuration, when checking respectBoundaries, then defaults to true")
+    func defaultConfigRespectBoundariesIsTrue() {
+        #expect(Configuration.defaultValue.respectBoundaries == true)
+    }
+
     // MARK: - Default Rules
 
     @Test(
