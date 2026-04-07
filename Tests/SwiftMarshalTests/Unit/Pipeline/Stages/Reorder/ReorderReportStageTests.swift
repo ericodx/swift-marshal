@@ -58,6 +58,8 @@ struct ReorderReportStageTests {
 
         #expect(output.text.contains("[order ok]"))
         #expect(!output.text.contains("[needs reordering]"))
+        #expect(output.text.contains("- initializer init"))
+        #expect(output.text.contains("- instance_method doSomething"))
     }
 
     // MARK: - Types Needing Reordering
@@ -86,6 +88,18 @@ struct ReorderReportStageTests {
         #expect(output.text.contains("[needs reordering]"))
         #expect(output.text.contains("original:"))
         #expect(output.text.contains("reordered:"))
+
+        let originalSection =
+            output.text.components(separatedBy: "original:").last?
+            .components(separatedBy: "reordered:").first ?? ""
+        let reorderedSection =
+            output.text.components(separatedBy: "reordered:").last?
+            .components(separatedBy: "Summary:").first ?? ""
+
+        #expect(originalSection.contains("- instance_method doSomething"))
+        #expect(originalSection.contains("- initializer init"))
+        #expect(reorderedSection.contains("- initializer init"))
+        #expect(reorderedSection.contains("- instance_method doSomething"))
     }
 
     // MARK: - Summary
