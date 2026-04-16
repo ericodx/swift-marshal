@@ -3,8 +3,8 @@
 [![Swift Package Index](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Fericodx%2Fswift-marshal%2Fbadge%3Ftype%3Dswift-versions)](https://swiftpackageindex.com/ericodx/swift-marshal)
 [![Swift Package Index](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Fericodx%2Fswift-marshal%2Fbadge%3Ftype%3Dplatforms)](https://swiftpackageindex.com/ericodx/swift-marshal)
 [![CI](https://img.shields.io/github/actions/workflow/status/ericodx/swift-marshal/main-analysis.yml?branch=main&style=flat-square&logo=github&logoColor=white&label=CI&color=4CAF50)](https://github.com/ericodx/swift-marshal/actions)
-[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=deploy-on-friday-swift-marshal&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=deploy-on-friday-swift-marshal)
-[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=deploy-on-friday-swift-marshal&metric=coverage)](https://sonarcloud.io/summary/new_code?id=deploy-on-friday-swift-marshal)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=ericodx-swift-marshal&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=ericodx-swift-marshal)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=ericodx-swift-marshal&metric=coverage)](https://sonarcloud.io/summary/new_code?id=ericodx-swift-marshal)
 ![mutation score](https://img.shields.io/badge/mutation%20score-96.5%25-lightgray?logo=jest&logoColor=white)
 
 **Ensure consistent member ordering in Swift types to improve readability and maintainability.**
