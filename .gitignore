@@ -1,5 +1,6 @@
 # Build Artifacts
 .build/
+Package.resolved
 
 # macOS
 .DS_Store
