@@ -1,3 +1,6 @@
+# Build Artifacts
+.build/
+
 # Local Files
 .swift-mutation-testing-cache/
 .swift-marshal-cache/
