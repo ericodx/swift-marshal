@@ -77,6 +77,8 @@ The compiled binary is at `.build/release/swift-marshal`. Copy it to a directory
 sudo cp .build/release/swift-marshal /usr/local/bin/
 ```
 
+For a full source workflow — prerequisites, tests, coverage, plugins, troubleshooting — see the [Building Guide](../BUILDING.md).
+
 ---
 
 ## Run without installing (SPM)
