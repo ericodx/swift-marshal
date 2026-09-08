@@ -1,3 +1,10 @@
+# Build Artifacts
+.build/
+Package.resolved
+
+# macOS
+.DS_Store
+
 # Local Files
 .swift-mutation-testing-cache/
 .swift-marshal-cache/

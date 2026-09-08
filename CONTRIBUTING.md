@@ -6,6 +6,7 @@ Swift Marshal is an AST-based CLI that organizes the internal structure of Swift
 It reorders members within type declarations, but does **not** format code, alter logic, or infer developer intent.
 
 For an overview of the project goals and scope, see the [README](README.md).
+To build, test, and run the project locally, see the [Building Guide](BUILDING.md).
 
 ---
 
