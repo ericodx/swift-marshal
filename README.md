@@ -104,6 +104,7 @@ Full reference in the [Usage & Configuration Guide](Docs/USAGE.md).
 | Document | Description |
 |---|---|
 | [Installation](Docs/INSTALLATION.md) | Homebrew, binary, source, pre-commit hook, Xcode plugin |
+| [Building](BUILDING.md) | Prerequisites, building from source, running tests, local install |
 | [Usage & Configuration](Docs/USAGE.md) | CLI options, YAML config, output formats, CI integration |
 | [Architecture](Docs/Architecture/README.md) | Module map, pipeline design, configuration model, AST rewriting |
 | [Codebase Reference](Docs/CodeBase/README.md) | Every type, protocol, and stage documented |
