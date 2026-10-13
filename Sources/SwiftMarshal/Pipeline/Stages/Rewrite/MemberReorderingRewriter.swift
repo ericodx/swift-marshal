@@ -215,8 +215,8 @@ final class MemberReorderingRewriter: SyntaxRewriter {
 
     private func ensureBlankLine(in separator: Trivia) -> Trivia {
         var pieces = Array(separator)
-        let lineBreakCount = pieces.reduce(0) { $0 + lineBreakCount(of: $1) }
-        guard lineBreakCount == 1, let index = pieces.firstIndex(where: isLineBreak) else {
+        let totalLineBreaks = pieces.reduce(0) { $0 + lineBreakCount(of: $1) }
+        guard totalLineBreaks == 1, let index = pieces.firstIndex(where: isLineBreak) else {
             return separator
         }
         switch pieces[index] {
