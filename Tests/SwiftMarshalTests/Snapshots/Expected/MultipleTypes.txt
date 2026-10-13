@@ -1,12 +1,10 @@
 struct First {
-
     init() {}
 
     func doSomething() {}
 }
 
 class Second {
-
     init(value: Int) {
         self.value = value
     }

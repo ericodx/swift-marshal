@@ -114,31 +114,34 @@ final class MemberReorderingRewriter: SyntaxRewriter {
             trackedIndices = Array(0 ..< allItems.count)
         }
 
-        let firstTrackedIndex = trackedIndices[0]
-        let originalFirstTrackedTrivia = allItems[firstTrackedIndex].leadingTrivia
+        let trackedLayouts = trackedIndices.map { splitLeadingTrivia(allItems[$0].leadingTrivia) }
+        let firstSlotSeparator = trackedLayouts[0].separator
+        let lineLayout = inferLineLayout(from: trackedLayouts)
 
         var reorderedTrackedItems: [MemberBlockItemSyntax] = []
         for (newIndex, indexedMember) in plan.reorderedMembers.enumerated() {
             let originalIndex = indexedMember.originalIndex
-            var item = allItems[trackedIndices[originalIndex]]
+            let item = allItems[trackedIndices[originalIndex]]
+            let (ownSeparator, attached) = trackedLayouts[originalIndex]
 
+            let separator: Trivia
             if newIndex == 0 {
-                let trivia =
-                    originalIndex != 0
-                    ? ensureBlankLine(in: originalFirstTrackedTrivia)
-                    : originalFirstTrackedTrivia
-                item = item.with(\.leadingTrivia, trivia)
-            } else if originalIndex == 0 {
-                let trivia = inferLeadingTriviaFromItems(allItems, trackedIndices: trackedIndices)
-                item = item.with(\.leadingTrivia, ensureBlankLine(in: trivia))
+                separator = firstSlotSeparator
             } else {
                 let previousOriginalIndex = plan.reorderedMembers[newIndex - 1].originalIndex
-                if originalIndex != previousOriginalIndex + 1 {
-                    item = item.with(\.leadingTrivia, ensureBlankLine(in: item.leadingTrivia))
-                }
+                separator = movedSeparator(
+                    ownSeparator,
+                    isAdjacent: originalIndex == previousOriginalIndex + 1,
+                    lineLayout: lineLayout
+                )
             }
 
-            reorderedTrackedItems.append(item)
+            let leadingTrivia = joinLeadingTrivia(
+                separator: separator,
+                attached: attached,
+                indentation: ownSeparator.isEmpty ? lineLayout?.indentation : nil
+            )
+            reorderedTrackedItems.append(item.with(\.leadingTrivia, leadingTrivia))
         }
 
         var finalItems: [MemberBlockItemSyntax] = []
@@ -153,20 +156,120 @@ final class MemberReorderingRewriter: SyntaxRewriter {
             }
         }
 
+        insertMissingSemicolons(in: &finalItems)
+
         let newMembers = MemberBlockItemListSyntax(finalItems)
         return memberBlock.with(\.members, newMembers)
     }
 
-    private func inferLeadingTriviaFromItems(_ items: [MemberBlockItemSyntax], trackedIndices: [Int]) -> Trivia {
-        return items[trackedIndices[1]].leadingTrivia
+    // MARK: - Trivia Layout
+
+    /// Splits leading trivia into the line breaks that separate a member from the previous one,
+    /// which belong to its position, and everything after the last of them — indentation, comments,
+    /// doc comments — which belongs to the member and moves with it.
+    private func splitLeadingTrivia(_ trivia: Trivia) -> (separator: Trivia, attached: Trivia) {
+        let pieces = Array(trivia)
+        let firstContentIndex = pieces.firstIndex { !isLineBreak($0) && !isIndentation($0) } ?? pieces.endIndex
+        guard let lastLineBreakIndex = pieces[..<firstContentIndex].lastIndex(where: isLineBreak) else {
+            return ([], trivia)
+        }
+        let separatorEnd = lastLineBreakIndex + 1
+        return (Trivia(pieces: Array(pieces[..<separatorEnd])), Trivia(pieces: Array(pieces[separatorEnd...])))
     }
 
-    private func ensureBlankLine(in trivia: Trivia) -> Trivia {
-        var pieces = Array(trivia)
-        guard let first = pieces.first, case .newlines(let count) = first, count < 2 else {
-            return trivia
+    private func inferLineLayout(
+        from layouts: [(separator: Trivia, attached: Trivia)]
+    ) -> (lineBreak: TriviaPiece, indentation: Trivia)? {
+        for (separator, attached) in layouts {
+            guard let lineBreak = separator.first(where: isLineBreak) else { continue }
+            let indentation = Array(attached).prefix(while: isIndentation)
+            return (singleLineBreak(like: lineBreak), Trivia(pieces: Array(indentation)))
         }
-        pieces[0] = .newlines(2)
+        return nil
+    }
+
+    private func movedSeparator(
+        _ ownSeparator: Trivia,
+        isAdjacent: Bool,
+        lineLayout: (lineBreak: TriviaPiece, indentation: Trivia)?
+    ) -> Trivia {
+        if isAdjacent {
+            return ownSeparator
+        }
+        if ownSeparator.isEmpty, let lineLayout {
+            return ensureBlankLine(in: Trivia(pieces: [lineLayout.lineBreak]))
+        }
+        return ensureBlankLine(in: ownSeparator)
+    }
+
+    private func joinLeadingTrivia(separator: Trivia, attached: Trivia, indentation: Trivia?) -> Trivia {
+        let content = Trivia(pieces: Array(Array(attached).drop(while: isIndentation)))
+        if separator.isEmpty {
+            return content
+        }
+        if let indentation {
+            return separator + indentation + content
+        }
+        return separator + attached
+    }
+
+    private func ensureBlankLine(in separator: Trivia) -> Trivia {
+        var pieces = Array(separator)
+        let totalLineBreaks = pieces.reduce(0) { $0 + lineBreakCount(of: $1) }
+        guard totalLineBreaks == 1, let index = pieces.firstIndex(where: isLineBreak) else {
+            return separator
+        }
+        switch pieces[index] {
+        case .newlines: pieces[index] = .newlines(2)
+        case .carriageReturns: pieces[index] = .carriageReturns(2)
+        case .carriageReturnLineFeeds: pieces[index] = .carriageReturnLineFeeds(2)
+        default: break
+        }
         return Trivia(pieces: pieces)
+    }
+
+    private func singleLineBreak(like piece: TriviaPiece) -> TriviaPiece {
+        switch piece {
+        case .carriageReturns: .carriageReturns(1)
+        case .carriageReturnLineFeeds: .carriageReturnLineFeeds(1)
+        default: .newlines(1)
+        }
+    }
+
+    private func lineBreakCount(of piece: TriviaPiece) -> Int {
+        switch piece {
+        case .newlines(let count), .carriageReturns(let count), .carriageReturnLineFeeds(let count): count
+        default: 0
+        }
+    }
+
+    private func isLineBreak(_ piece: TriviaPiece) -> Bool {
+        lineBreakCount(of: piece) > 0
+    }
+
+    private func isIndentation(_ piece: TriviaPiece) -> Bool {
+        switch piece {
+        case .spaces, .tabs: true
+        default: false
+        }
+    }
+
+    // MARK: - Semicolons
+
+    /// Swift requires `;` between declarations that share a line. Reordering can place a member
+    /// that had no semicolon before another member on the same line, so one is added; the member's
+    /// trailing trivia moves after it to keep the original spacing.
+    private func insertMissingSemicolons(in items: inout [MemberBlockItemSyntax]) {
+        for index in items.indices.dropLast() {
+            let item = items[index]
+            guard item.semicolon == nil, !items[index + 1].leadingTrivia.contains(where: isLineBreak) else {
+                continue
+            }
+            let trailingTrivia = item.decl.trailingTrivia
+            items[index] =
+                item
+                .with(\.decl, item.decl.with(\.trailingTrivia, []))
+                .with(\.semicolon, .semicolonToken(trailingTrivia: trailingTrivia))
+        }
     }
 }

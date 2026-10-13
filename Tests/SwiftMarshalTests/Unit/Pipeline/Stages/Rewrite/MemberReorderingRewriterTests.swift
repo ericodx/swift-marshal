@@ -447,4 +447,164 @@ struct MemberReorderingRewriterTests {
         #expect(result == source)
     }
 
+    // MARK: - Trivia Attachment
+
+    @Test(
+        "Given a first member that moves and a commented member that becomes first, when rewriting, then each comment stays with its member"
+    )
+    func commentsFollowMembersAcrossFirstPosition() throws {
+        let source = """
+            struct Foo {
+                // MARK: - Methods
+                func doSomething() {}
+
+                // MARK: - Initializers
+                init() {}
+            }
+            """
+
+        let result = try applyRewrite(to: source)
+
+        #expect(
+            result == """
+                struct Foo {
+                    // MARK: - Initializers
+                    init() {}
+
+                    // MARK: - Methods
+                    func doSomething() {}
+                }
+                """
+        )
+    }
+
+    @Test(
+        "Given an uncommented first member that moves after a documented member, when rewriting, then the doc comment stays with its member"
+    )
+    func docCommentIsNotMovedToMovedFirstMember() throws {
+        let source = """
+            struct Foo {
+                func doSomething() {}
+
+                /// The display name.
+                var name: String
+            }
+            """
+
+        let result = try applyRewrite(to: source)
+
+        #expect(
+            result == """
+                struct Foo {
+                    /// The display name.
+                    var name: String
+
+                    func doSomething() {}
+                }
+                """
+        )
+    }
+
+    @Test(
+        "Given three commented members in reverse order, when rewriting, then each comment stays with its member"
+    )
+    func commentsFollowMembersInFullReversal() throws {
+        let source = """
+            struct Foo {
+                // A
+                func a() {}
+                // B
+                var b: Int
+                // C
+                init() {}
+            }
+            """
+
+        let result = try applyRewrite(to: source)
+
+        #expect(
+            result == """
+                struct Foo {
+                    // C
+                    init() {}
+
+                    // B
+                    var b: Int
+
+                    // A
+                    func a() {}
+                }
+                """
+        )
+    }
+
+    @Test(
+        "Given a commented member preceded by a whitespace-only line, when it becomes first, then no whitespace line is left after the brace"
+    )
+    func whitespaceOnlyLineStaysWithSlot() throws {
+        let source = "struct Foo {\n    func a() {}\n    \n    // c\n    init() {}\n}\n"
+
+        let result = try applyRewrite(to: source)
+
+        #expect(result == "struct Foo {\n    // c\n    init() {}\n\n    func a() {}\n}\n")
+    }
+
+    @Test(
+        "Given a source with CRLF line endings, when rewriting, then comments follow members and a CRLF blank line separates them"
+    )
+    func handlesCarriageReturnLineFeeds() throws {
+        let source = "struct Foo {\r\n    func a() {}\r\n\r\n    // c\r\n    init() {}\r\n}\r\n"
+
+        let result = try applyRewrite(to: source)
+
+        #expect(result == "struct Foo {\r\n    // c\r\n    init() {}\r\n\r\n    func a() {}\r\n}\r\n")
+    }
+
+    @Test(
+        "Given a first member on the same line as the brace, when it moves, then it is placed on its own indented line"
+    )
+    func firstMemberOnBraceLineMovesToOwnLine() throws {
+        let source = """
+            struct Foo { func a() {}
+                init() {}
+            }
+            """
+
+        let result = try applyRewrite(to: source)
+
+        #expect(
+            result == """
+                struct Foo { init() {}
+
+                    func a() {}
+                }
+                """
+        )
+    }
+
+    // MARK: - Semicolons
+
+    @Test(
+        "Given members on a single line separated by a semicolon, when rewriting, then the result keeps them separated by semicolons"
+    )
+    func insertsSemicolonBetweenMembersSharingALine() throws {
+        let source = "struct Foo { func a() {}; init() {} }"
+
+        let result = try applyRewrite(to: source)
+
+        #expect(result == "struct Foo { init() {}; func a() {}; }")
+    }
+
+    @Test(
+        "Given members on a single line, when rewriting twice, then the result is stable"
+    )
+    func singleLineRewriteIsIdempotent() throws {
+        let source = "struct Foo { func a() {}; var b: Int; init() {} }"
+
+        let once = try applyRewrite(to: source)
+        let twice = try applyRewrite(to: once)
+
+        #expect(once == twice)
+        #expect(once == "struct Foo { init() {}; var b: Int; func a() {}; }")
+    }
 }

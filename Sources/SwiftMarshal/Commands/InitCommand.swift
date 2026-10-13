@@ -31,8 +31,11 @@ struct InitCommand {
 
     // MARK: - Execution
 
-    func run() throws {
-        let currentDir = FileManager.default.currentDirectoryPath
+    func run(in currentDir: String = FileManager.default.currentDirectoryPath) throws {
+        guard !currentDir.isEmpty else {
+            throw InitError.currentDirectoryUnavailable
+        }
+
         let configPath = currentDir + "/" + Self.configFileName
 
         if FileManager.default.fileExists(atPath: configPath) && !force {

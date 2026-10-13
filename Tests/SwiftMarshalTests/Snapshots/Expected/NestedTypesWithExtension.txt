@@ -1,5 +1,4 @@
 struct DataManager {
-
     init(config: Config) {
         self.config = config
     }
@@ -7,7 +6,6 @@ struct DataManager {
     var config: Config
 
     struct Config {
-
         var maxRetries: Int = 3
 
         func validate() {}

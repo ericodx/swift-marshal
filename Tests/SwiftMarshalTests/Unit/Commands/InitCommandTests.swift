@@ -15,12 +15,8 @@ struct InitCommandTests {
         let tempDir = createTempDirectory()
         defer { removeTempDirectory(tempDir) }
 
-        let originalDir = FileManager.default.currentDirectoryPath
-        FileManager.default.changeCurrentDirectoryPath(tempDir)
-        defer { FileManager.default.changeCurrentDirectoryPath(originalDir) }
-
         let command = try InitCommand.parse([])
-        try command.run()
+        try command.run(in: tempDir)
 
         let configPath = tempDir + "/.swift-marshal.yaml"
         #expect(FileManager.default.fileExists(atPath: configPath))
@@ -36,14 +32,10 @@ struct InitCommandTests {
         let configPath = tempDir + "/.swift-marshal.yaml"
         FileManager.default.createFile(atPath: configPath, contents: Data("existing".utf8))
 
-        let originalDir = FileManager.default.currentDirectoryPath
-        FileManager.default.changeCurrentDirectoryPath(tempDir)
-        defer { FileManager.default.changeCurrentDirectoryPath(originalDir) }
-
         let command = try InitCommand.parse([])
 
         #expect(throws: InitError.self) {
-            try command.run()
+            try command.run(in: tempDir)
         }
     }
 
@@ -57,12 +49,8 @@ struct InitCommandTests {
         let configPath = tempDir + "/.swift-marshal.yaml"
         FileManager.default.createFile(atPath: configPath, contents: Data("old content".utf8))
 
-        let originalDir = FileManager.default.currentDirectoryPath
-        FileManager.default.changeCurrentDirectoryPath(tempDir)
-        defer { FileManager.default.changeCurrentDirectoryPath(originalDir) }
-
         let command = try InitCommand.parse(["--force"])
-        try command.run()
+        try command.run(in: tempDir)
 
         let newContent = try String(contentsOfFile: configPath, encoding: .utf8)
         #expect(newContent.contains("version: 1"))
@@ -76,12 +64,8 @@ struct InitCommandTests {
         let tempDir = createTempDirectory()
         defer { removeTempDirectory(tempDir) }
 
-        let originalDir = FileManager.default.currentDirectoryPath
-        FileManager.default.changeCurrentDirectoryPath(tempDir)
-        defer { FileManager.default.changeCurrentDirectoryPath(originalDir) }
-
         let command = try InitCommand.parse([])
-        try command.run()
+        try command.run(in: tempDir)
 
         let configPath = tempDir + "/.swift-marshal.yaml"
         let content = try String(contentsOfFile: configPath, encoding: .utf8)
@@ -107,12 +91,8 @@ struct InitCommandTests {
 
         FileManager.default.createFile(atPath: tempDir + "/Package.swift", contents: Data())
 
-        let originalDir = FileManager.default.currentDirectoryPath
-        FileManager.default.changeCurrentDirectoryPath(tempDir)
-        defer { FileManager.default.changeCurrentDirectoryPath(originalDir) }
-
         let command = try InitCommand.parse([])
-        try command.run()
+        try command.run(in: tempDir)
 
         let content = try String(contentsOfFile: tempDir + "/.swift-marshal.yaml", encoding: .utf8)
         #expect(content.contains("paths:"))
@@ -129,12 +109,8 @@ struct InitCommandTests {
         let xcodeprojURL = URL(fileURLWithPath: tempDir + "/MyApp.xcodeproj")
         try FileManager.default.createDirectory(at: xcodeprojURL, withIntermediateDirectories: true)
 
-        let originalDir = FileManager.default.currentDirectoryPath
-        FileManager.default.changeCurrentDirectoryPath(tempDir)
-        defer { FileManager.default.changeCurrentDirectoryPath(originalDir) }
-
         let command = try InitCommand.parse([])
-        try command.run()
+        try command.run(in: tempDir)
 
         let content = try String(contentsOfFile: tempDir + "/.swift-marshal.yaml", encoding: .utf8)
         #expect(content.contains("paths:"))
@@ -148,12 +124,8 @@ struct InitCommandTests {
         let tempDir = createTempDirectory()
         defer { removeTempDirectory(tempDir) }
 
-        let originalDir = FileManager.default.currentDirectoryPath
-        FileManager.default.changeCurrentDirectoryPath(tempDir)
-        defer { FileManager.default.changeCurrentDirectoryPath(originalDir) }
-
         let command = try InitCommand.parse([])
-        try command.run()
+        try command.run(in: tempDir)
 
         let content = try String(contentsOfFile: tempDir + "/.swift-marshal.yaml", encoding: .utf8)
         #expect(!content.contains("paths:"))
@@ -209,6 +181,30 @@ struct InitCommandTests {
         #expect(
             error.errorDescription
                 == "Configuration file already exists at /path/to/config.yaml. Use --force to overwrite.")
+    }
+
+    @Test(
+        "Given an unavailable current directory, when executing init command, then throws currentDirectoryUnavailable"
+    )
+    func throwsErrorWhenCurrentDirectoryIsUnavailable() throws {
+        let command = try InitCommand.parse([])
+
+        let error = #expect(throws: InitError.self) {
+            try command.run(in: "")
+        }
+        guard case .currentDirectoryUnavailable = error else {
+            Issue.record("Expected currentDirectoryUnavailable, got \(String(describing: error))")
+            return
+        }
+    }
+
+    @Test(
+        "Given an InitError for unavailable current directory, when getting the error description, then describes the unavailable directory"
+    )
+    func currentDirectoryUnavailableErrorDescription() {
+        #expect(
+            InitError.currentDirectoryUnavailable.errorDescription
+                == "The current directory is unavailable. It may have been deleted.")
     }
 
     // MARK: - Default Config Content

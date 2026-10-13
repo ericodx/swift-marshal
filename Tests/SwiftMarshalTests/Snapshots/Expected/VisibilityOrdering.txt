@@ -1,5 +1,4 @@
 class APIClient {
-
     public init() {}
 
     public var endpoint: String = ""

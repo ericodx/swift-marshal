@@ -1,5 +1,4 @@
 class ViewModel: ObservableObject {
-
     public init() {}
 
     @Published private var isLoading: Bool = false

@@ -7,11 +7,13 @@ struct ConfigurationService {
     init(
         fileReader: FileReading = FileReader(),
         loader: ConfigurationLoader = ConfigurationLoader(),
-        mapper: ConfigurationMapper = ConfigurationMapper()
+        mapper: ConfigurationMapper = ConfigurationMapper(),
+        currentDirectory: String = FileManager.default.currentDirectoryPath
     ) {
         self.fileReader = fileReader
         self.loader = loader
         self.mapper = mapper
+        self.currentDirectory = currentDirectory
     }
 
     // MARK: - Properties
@@ -19,14 +21,15 @@ struct ConfigurationService {
     private let fileReader: FileReading
     private let loader: ConfigurationLoader
     private let mapper: ConfigurationMapper
+    private let currentDirectory: String
     private let configFileName = ".swift-marshal.yaml"
 
     // MARK: - Public Methods
 
     func load(from directory: String? = nil) async throws -> Configuration {
-        let startDirectory = directory ?? FileManager.default.currentDirectoryPath
+        let startDirectory = directory ?? currentDirectory
 
-        guard let configPath = findConfigFile(startingFrom: startDirectory) else {
+        guard !startDirectory.isEmpty, let configPath = findConfigFile(startingFrom: startDirectory) else {
             return .defaultValue
         }
 
@@ -61,8 +64,8 @@ struct ConfigurationService {
                 return configPath
             }
 
-            let parent = currentPath.deletingLastPathComponent()
-            guard parent.standardizedFileURL != currentPath.standardizedFileURL else { break }
+            let parent = currentPath.deletingLastPathComponent().standardizedFileURL
+            guard parent.path.count < currentPath.path.count else { break }
             currentPath = parent
         }
 

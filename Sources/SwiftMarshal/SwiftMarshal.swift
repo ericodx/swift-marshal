@@ -7,7 +7,10 @@ struct SwiftMarshal {
         exit(await run(args: Array(CommandLine.arguments.dropFirst())).rawValue)
     }
 
-    static func run(args: [String]) async -> ExitCode {
+    static func run(
+        args: [String],
+        currentDirectory: String = FileManager.default.currentDirectoryPath
+    ) async -> ExitCode {
         if args.isEmpty || args.first == "--help" || args.first == "-h" {
             print(HelpText.usage)
             return .success
@@ -31,7 +34,7 @@ struct SwiftMarshal {
                 try await FixCommand.parse(subArgs).run()
 
             case "init":
-                try InitCommand.parse(subArgs).run()
+                try InitCommand.parse(subArgs).run(in: currentDirectory)
 
             default:
                 fputs("error: unknown command '\(subcommand)'\n", stderr)
