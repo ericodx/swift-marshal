@@ -1,5 +1,4 @@
 struct User {
-
     init(name: String) {
         self.name = name
     }

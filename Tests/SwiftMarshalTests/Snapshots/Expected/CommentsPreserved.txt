@@ -1,8 +1,7 @@
 struct Documented {
+    // MARK: - Initialization
 
-    // MARK: - Methods
-
-    /// Performs the main action.
+    /// Creates a new instance.
     init() {}
 
     // MARK: - Properties
@@ -10,9 +9,9 @@ struct Documented {
     /// The name of the instance.
     var name: String = ""
 
-    // MARK: - Initialization
+    // MARK: - Methods
 
-    /// Creates a new instance.
+    /// Performs the main action.
     func performAction() {
         // Implementation here
     }

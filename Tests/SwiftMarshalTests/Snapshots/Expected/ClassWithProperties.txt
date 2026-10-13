@@ -1,5 +1,4 @@
 class ViewModel {
-
     init() {}
 
     static let shared = ViewModel()

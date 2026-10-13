@@ -1,5 +1,4 @@
 struct NetworkClient {
-
     init(baseURL: String) {
         self.baseURL = baseURL
     }
