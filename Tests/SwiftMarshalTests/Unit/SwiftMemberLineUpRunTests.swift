@@ -116,11 +116,7 @@ struct SwiftMarshalRunTests {
         let tempDir = createTempDirectory()
         defer { removeTempDirectory(tempDir) }
 
-        let originalDir = FileManager.default.currentDirectoryPath
-        FileManager.default.changeCurrentDirectoryPath(tempDir)
-        defer { FileManager.default.changeCurrentDirectoryPath(originalDir) }
-
-        let code = await SwiftMarshal.run(args: ["init"])
+        let code = await SwiftMarshal.run(args: ["init"], currentDirectory: tempDir)
         #expect(code.rawValue == ExitCode.success.rawValue)
     }
 }
