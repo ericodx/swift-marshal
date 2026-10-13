@@ -134,13 +134,31 @@ struct ConfigurationServiceTests {
         try FileManager.default.createDirectory(at: tempDir, withIntermediateDirectories: true)
         defer { try? FileManager.default.removeItem(at: tempDir) }
 
-        let originalDir = FileManager.default.currentDirectoryPath
-        FileManager.default.changeCurrentDirectoryPath(tempDir.path)
-        defer { FileManager.default.changeCurrentDirectoryPath(originalDir) }
-
-        let service = ConfigurationService()
+        let service = ConfigurationService(currentDirectory: tempDir.path)
         let config = try await service.load(configPath: nil)
 
         #expect(config == Configuration.defaultValue)
+    }
+
+    // MARK: - Unavailable Current Directory
+
+    @Test(
+        "Given an unavailable current directory, when loading with ConfigurationService, then returns default configuration"
+    )
+    func loadsDefaultWhenCurrentDirectoryIsUnavailable() async throws {
+        let service = ConfigurationService(currentDirectory: "")
+        let config = try await service.load(configPath: nil)
+
+        #expect(config == Configuration.defaultValue)
+    }
+
+    @Test(
+        "Given the root directory, when loading with ConfigurationService, then the search stops at the root"
+    )
+    func searchStopsAtRootDirectory() async throws {
+        let service = ConfigurationService(currentDirectory: "/")
+        let config = try await service.load(configPath: nil)
+
+        #expect(config.version == Configuration.defaultValue.version)
     }
 }
